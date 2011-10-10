@@ -1,3 +1,0 @@
-Package: nginx nginx-common nginx-dbg nginx-doc nginx-extras nginx-extras-dbg nginx-full nginx-full-dbg nginx-light nginx-light-dbg
-Pin: release a=squeeze-backports
-Pin-Priority: 1500

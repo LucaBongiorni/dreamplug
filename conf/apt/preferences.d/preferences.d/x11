@@ -1,3 +1,0 @@
-Package: xserver-xorg xserver-xorg-core
-Pin: version *
-Pin-Priority: -1
