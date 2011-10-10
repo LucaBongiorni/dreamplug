@@ -131,6 +131,7 @@ foreach my $file (keys %import_map) {
 		my $dest = &chomp_path ($gitroot . "/" . $import_map {$file});
 		my $dir = &dirname ($dest);
 		&mkdir_p ($dir, $gitroot);
+		$dest = $dir if (-d $file);
 		my $cmd = "$CP $file $dest" . $NOERR;
 		print "error importing $file\n" if (system ($cmd));
 	}
