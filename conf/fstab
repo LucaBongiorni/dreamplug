@@ -1,0 +1,64 @@
+# /etc/fstab: static file system information
+#
+# 'blkid -o value -s UUID'
+#
+# <fs> <mp> <type> <opt> <dump> <pass>
+
+## sd disk map
+# sd-1	dp-kern 			vfat
+# sd-2	dp-rootfs 		ext3
+# sd-5	dp-swap 			swap
+# sd-6	dp-reserved		ext3
+# sd-7	dp-usr			jfs
+# sd-8	dp-var			reiserfs
+# sd-9	dp-rssh			ext4 without journal
+
+## fstab body
+
+##### procfs
+
+proc /proc proc nodev,noexec,nosuid 0 0
+
+###### root disk
+
+/dev/sda2	/			ext3		ro,noatime,errors=remount-ro	0 1
+/dev/sda1	/boot		vfat		ro,sync,noatime		0 2
+/dev/sda7	/usr		jfs		ro,noatime				0 3
+/dev/sda8	/var		reiserfs	rw,notail,noatime		0 3
+
+# /root/.ssh
+##  should be independently writeable (rw-root for adding a ssh key vs tiny partition)
+# /reserved - backups some files here
+
+/dev/sda9	/root/.ssh	ext4	rw,sync,noatime,nodev,nosuid,noexec,barrier=0	0 4
+/dev/sda6	/reserved	ext3	ro,noatime,sync,noauto,nodev,noexec	0 5
+
+# some swap on sda
+/dev/sda5	none 		swap 	sw,nofail,pri=50	0 0
+
+
+##### tmpfs
+
+# *CAUTION* /var/log is on tmpfs (150M)
+# /tmp (150M)
+# /var/cache (250M)
+
+tmpfs	/var/log		tmpfs mode=1777,nodev,nosuid,noexec,size=150M	0 0
+tmpfs /var/cache 	tmpfs mode=1777,nodev,nosuid,noexec,size=250M 	0 0
+tmpfs /tmp 			tmpfs mode=1777,nodev,nosuid,size=150M 			0 0
+
+
+##### binds
+# bind /srv from /var
+# bind /status from /var
+# bind /home from /var
+
+/var/local/srv 	/srv 		none bind
+/var/local/status /status 	none bind
+/var/local/home 	/home 	none bind
+
+##### disks
+
+# vdr/files disk on [/var/local]/mnt/disk by UUID
+
+UUID=<DISK_UUID> /var/local/mnt/disk ext4 rw,user,nodev,noatime,exec 0 4

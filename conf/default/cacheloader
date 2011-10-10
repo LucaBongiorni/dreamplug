@@ -1,0 +1,11 @@
+# /etc/default/cacheloader
+# example
+#
+
+# what to save
+BACKUP_TARGETS="vdr vdradmin-am apt"
+# where to save
+BACKUP="/var/local/last-cache.tar"
+
+# give taropts or leave blank
+TAROPTS="--exclude=*.deb"

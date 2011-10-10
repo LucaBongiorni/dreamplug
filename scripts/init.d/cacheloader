@@ -1,0 +1,91 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          cacheloader
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# X-Start-Before:    vdr vdradmin-am
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Load or backups /var/cache files
+# Description:       see short-description
+### END INIT INFO
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="/var/cache loader"
+NAME=cacheloader
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+S="/var/cache"
+
+mk_tarball() {
+	cd "$S" || return $?
+	local list=""
+	for x in $BACKUP_TARGETS; do
+		[[ -e "$x" ]] && list="${list} $x" || true
+	done
+	[[ -n "$list" ]] || return 0
+
+	if [[ -e "$BACKUP" ]]; then
+		mv -f -- "$BACKUP" "$BACKUP.bak"
+	fi
+
+	tar c ${TAROPTS:-} -apf "$BACKUP" $list || return 1
+}
+
+ex_tarball() {
+	cd "$S" || return $?
+	[[ -f "$BACKUP" ]] || [[ -L "$BACKUP" ]] || return 0
+
+	tar x --keep-old-files -apf "$BACKUP" -C "$S"/ || return 1
+}
+
+do_start() {
+	# load archive into $S
+	ex_tarball
+}
+
+do_stop() {
+	# make archive
+	mk_tarball
+}
+
+
+## end of user area
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start 1>/dev/null
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop 1>/dev/null
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop}" >&2
+	exit 3
+	;;
+esac
+
+:

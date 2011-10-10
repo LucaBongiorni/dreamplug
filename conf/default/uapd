@@ -1,0 +1,18 @@
+# /etc/default/uapd
+# uapd example
+
+# uap device to control
+DEV=uap0
+
+# ip, netmask to assign
+IP='192.168.42.1'
+NETMASK='255.255.255.0'
+
+# ssid
+SSID=my_ssid
+
+# channel
+CHANNEL=9
+
+# passphrase
+PASSKEY=secretpass

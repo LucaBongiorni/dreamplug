@@ -1,0 +1,3 @@
+#!/bin/bash
+self=$(basename $0)
+ps axu | grep -v $self |grep -v grep |grep $*

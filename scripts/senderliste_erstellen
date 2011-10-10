@@ -1,0 +1,23 @@
+#!/bin/bash
+die() {
+	echo -n "die()" 1>&2
+	[ $# -gt 0 ]&& echo ": $*" 1>&2 || echo "" 1>&2
+	exit 1
+}
+
+templates="/usr/share/dvb/dvb-s"
+sat="Astra-19.2E"
+
+args="-x0 -t1 -s1 ${templates}/${sat}"
+cmd="scan ${args}"
+
+tmp="/tmp/senderliste_${sat}_$(date +%F)"
+touch "$tmp" ||die "creating $tmp"
+
+$cmd | perl -pe 's=(.*?):=$1;=' > "$tmp" ||die "fehler beim erstellen der senderliste"
+cat << EOF
+
+Fertig. Die Senderliste befindet sich hier: ${tmp}
+EOF
+
+exit 0

@@ -1,0 +1,3 @@
+Package: vdr vdr-plugin-streamdev-server vdradmin-am vdr-plugin-epgsearch
+Pin: release a=testing
+Pin-Priority: 1500

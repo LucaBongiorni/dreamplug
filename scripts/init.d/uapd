@@ -1,0 +1,89 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          uapd
+# Required-Start:    $remote_fs $network $syslog
+# Required-Stop:     $remote_fs $network $syslog
+# X-Start-Before:    vdr vdradmin-am shorewall dnsmasq
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/Stop uap AP mode.
+# Description:       see short-description
+### END INIT INFO
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="Start uap in AP mode"
+NAME=uapd
+PIDFILE=/var/run/$NAME.pid
+SCRIPTNAME=/etc/init.d/$NAME
+
+UAP="/usr/bin/uaputl"
+# security protos
+NOSEC=1
+WEP=2
+WPA=8
+WPA2=32
+WPA2_MIXED=40
+
+# ciphers
+NOCIPHER=0
+TKIP=4
+AES=8
+AES_TKIP=12
+TKIP_AES=$AES_TKIP
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+UAP="${UAP} -i ${DEV}"
+
+# start function for $DEV
+do_start() {
+	ifconfig $DEV $IP netmask $NETMASK up || return 1
+	$UAP sys_cfg_ssid "$SSID"
+	$UAP sys_cfg_protocol $WPA2
+	$UAP sys_cfg_wpa_passphrase "$PASSKEY"
+	$UAP sys_cfg_cipher $AES $AES
+	$UAP sys_cfg_channel $CHANNEL
+
+	$UAP bss_start || return 2
+}
+
+# stop function for $DEV
+do_stop() {
+	$UAP bss_stop || return 2
+	ifconfig $DEV down || return 1
+}
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start 1>/dev/null
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop 1>/dev/null
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop}" >&2
+	exit 3
+	;;
+esac
+
+:

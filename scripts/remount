@@ -1,0 +1,35 @@
+#!/bin/bash
+mode="${0##*-}"
+
+M="/bin/mount"
+
+list_mounts() {
+	cut -d' ' -f2 /proc/mounts | sort -u
+}
+grep_mount() {
+	list_mounts | grep -q ^"${1:-undefined_value!}"$
+}
+
+case "$mode" in
+	"readonly"|"read-only") mode=ro ;;
+	"writeable") mode=rw ;;
+	"ro"|"rw") true ;;
+	*) exit 126 ;;
+esac
+
+if [[ $# -gt 0 ]]; then
+	mounts="$*"
+else
+	mounts="/ /boot /usr"
+fi
+
+[[ -z "$mounts" ]] && exit 1 || true
+
+for mp in $mounts; do
+	[[ -d $mp ]] || continue
+	if grep_mount $mp; then
+		$M $mp -o remount,$mode
+	else
+		$M $mp -o $mode
+	fi
+done
