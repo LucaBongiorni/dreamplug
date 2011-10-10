@@ -16,7 +16,7 @@ my %import_map = (
 
 	'/etc/init.d/uapd' => 'scripts/init.d/uapd',
 	'/etc/init.d/cacheloader' => 'scripts/init.d/cacheloader',
-	'/etc/init.d/rc.local.shutdown' => 'conf/init.d/rc.local.shutdown',
+	'/etc/init.d/rc.local.shutdown' => 'scripts/init.d/rc.local.shutdown',
 
 	'/etc/sudoers.d/vdr_led' => 'conf/sudoers.d/vdr_led',
 	'/etc/apt/preferences.d' => 'conf/apt/preferences.d',
