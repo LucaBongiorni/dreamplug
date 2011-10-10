@@ -1,1 +1,5 @@
----this could be a README file---
+This repo contains config files and scripts (runtime / toolchain) that I use for my dreamplug.
+It does not include kernel images or firmware files.
+
+Self-written text/files is/are licensed under the WTFPL, see COPYING.
+For other files, see LICENSE/COPYING in the subdirectories or ask if unsure.
