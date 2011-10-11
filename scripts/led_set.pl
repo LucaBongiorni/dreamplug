@@ -4,7 +4,8 @@ use strict;
 
 package led_control;
 
-my $led_root = '/sys/devices/platform/leds-gpio/leds';
+#my $led_root = '/sys/devices/platform/leds-gpio/leds';
+my $led_root = '/sys/class/leds';
 my $led_ctrl = "brightness";
 my $s = '/';
 

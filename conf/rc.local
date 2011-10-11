@@ -17,6 +17,9 @@ touch /var/log/lastlog
 rfkill block bluetooth
 
 #/root/bin/remount-ro /
+
+# suspend audio
+echo auto >/sys/devices/platform/orion-ehci.0/usb1/1-1/1-1.4/power/control
 exit 0
 
 
